@@ -165,7 +165,7 @@ def test(data,
                     jdict.append({'image_id': int(image_id) if image_id.isnumeric() else image_id,
                                   'category_id': coco91class[int(p[5])],
                                   'bbox': [round(x, 3) for x in b],
-                                  'score': round(p[4], 5)})
+                                  'score': round(p[4], 3)})
 
             # Assign all predictions as incorrect
             correct = torch.zeros(pred.shape[0], niou, dtype=torch.bool, device=device)
@@ -237,21 +237,21 @@ def test(data,
         with open(f, 'w') as file:
             json.dump(jdict, file)
 
-        try:  # https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/pycocoEvalDemo.ipynb
-            from pycocotools.coco import COCO
-            from pycocotools.cocoeval import COCOeval
-
-            imgIds = [int(Path(x).stem) for x in dataloader.dataset.img_files]
-            cocoGt = COCO(glob.glob('../coco/annotations/instances_val*.json')[0])  # initialize COCO ground truth api
-            cocoDt = cocoGt.loadRes(f)  # initialize COCO pred api
-            cocoEval = COCOeval(cocoGt, cocoDt, 'bbox')
-            cocoEval.params.imgIds = imgIds  # image IDs to evaluate
-            cocoEval.evaluate()
-            cocoEval.accumulate()
-            cocoEval.summarize()
-            map, map50 = cocoEval.stats[:2]  # update results (mAP@0.5:0.95, mAP@0.5)
-        except Exception as e:
-            print('ERROR: pycocotools unable to run: %s' % e)
+        # try:  # https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/pycocoEvalDemo.ipynb
+        #     from pycocotools.coco import COCO
+        #     from pycocotools.cocoeval import COCOeval
+        #
+        #     imgIds = [int(Path(x).stem) for x in dataloader.dataset.img_files]
+        #     cocoGt = COCO(glob.glob('../coco/annotations/instances_val*.json')[0])  # initialize COCO ground truth api
+        #     cocoDt = cocoGt.loadRes(f)  # initialize COCO pred api
+        #     cocoEval = COCOeval(cocoGt, cocoDt, 'bbox')
+        #     cocoEval.params.imgIds = imgIds  # image IDs to evaluate
+        #     cocoEval.evaluate()
+        #     cocoEval.accumulate()
+        #     cocoEval.summarize()
+        #     map, map50 = cocoEval.stats[:2]  # update results (mAP@0.5:0.95, mAP@0.5)
+        # except Exception as e:
+        #     print('ERROR: pycocotools unable to run: %s' % e)
 
     # Return results
     model.float()  # for training
@@ -280,7 +280,8 @@ if __name__ == '__main__':
     parser.add_argument('--cfg', type=str, default='cfg/yolov4.cfg', help='*.cfg path')
     parser.add_argument('--names', type=str, default='data/coco.names', help='*.cfg path')
     opt = parser.parse_args()
-    opt.save_json |= opt.data.endswith('coco.yaml')
+    # opt.save_json |= opt.data.endswith('coco.yaml')
+    opt.save_json = True
     opt.data = check_file(opt.data)  # check file
     print(opt)
 

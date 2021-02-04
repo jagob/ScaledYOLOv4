@@ -1,3 +1,8 @@
+# My notes
+nvidia-docker run --name yolov4_csp -it -v your_coco_path/:/coco/ -v your_code_path/:/yolo --shm-size=64g nvcr.io/nvidia/pytorch:19.10-py3
+
+python test.py --data data/UCSDped2.yaml --task test --cfg models/yolov4-csp.cfg --weights weights/yolov4-csp.weights --conf-thres 0.1 --batch 
+
 # YOLOv4-CSP
 
 This is the implementation of "[Scaled-YOLOv4: Scaling Cross Stage Partial Network](https://arxiv.org/abs/2011.08036)" using PyTorch framwork.
